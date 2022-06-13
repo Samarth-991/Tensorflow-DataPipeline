@@ -11,7 +11,7 @@ IMAGE_WIDTH = 224
 CHANNELS = 3
 INIT_LR = 1e-3
 
-save_model_dir = "saved_model"
+save_model_dir = "{}_{}".format(MODEL,'saved_model')
 save_every_n_epoch = 10
 test_image_dir = ""
 

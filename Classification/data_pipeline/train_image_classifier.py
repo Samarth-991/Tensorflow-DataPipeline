@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 from configuration import IMAGE_WIDTH, IMAGE_HEIGHT, INIT_LR, EPOCHS, NUM_CLASSES, BATCH_SIZE
+from configuration import save_model_dir
 from create_tfrecord_for_classifier import tf_record_for_object_classification as prepare_dataset
 
 
@@ -61,7 +62,7 @@ def main(args):
     # Parse tf file
     if not os.path.isfile(tfrecord_train):
         print("NO {} file found ", format(tfrecord_train))
-    parse_tf_record = prepare_dataset.ParseTFRecord(augmentataion=False,image_size=224)
+    parse_tf_record = prepare_dataset.ParseTFRecord(augmentataion=False, image_size=224)
     train_dataset = parse_tf_record.parse_dataset(tfrecord_train)
     train_count = parse_tf_record.get_the_length_of_dataset(train_dataset)
     print("Total Length of Data record:{}".format(train_count))
@@ -81,6 +82,8 @@ def main(args):
     train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
     valid_loss = tf.keras.metrics.Mean(name='valid_loss')
     valid_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='valid_accuracy')
+    # saved model
+    save_model_path = os.path.join(args.path, save_model_dir)
 
     @tf.function
     def train_step(image_batch, label_batch):
@@ -109,14 +112,14 @@ def main(args):
             step += 1
             image, label = parse_tf_record.process_features(features)
             train_step(image, label)
-            if args.verbose ==2:
+            if args.verbose == 2:
                 print("Epoch: {}/{}, step: {}/{}, loss: {:.5f}, accuracy: {:.5f}".format(epoch,
-                                                                                     EPOCHS,
-                                                                                     step,
-                                                                                     math.ceil(
-                                                                                         train_count / BATCH_SIZE),
-                                                                                     train_loss.result().numpy(),
-                                                                                     train_accuracy.result().numpy()))
+                                                                                         EPOCHS,
+                                                                                         step,
+                                                                                         math.ceil(
+                                                                                             train_count / BATCH_SIZE),
+                                                                                         train_loss.result().numpy(),
+                                                                                         train_accuracy.result().numpy()))
         for features in valid_dataset.batch(1):
             valid_images, valid_labels = parse_tf_record.process_features(features)
             valid_step(valid_images, valid_labels)
@@ -131,11 +134,15 @@ def main(args):
         train_accuracy.reset_states()
         valid_loss.reset_states()
         valid_accuracy.reset_states()
+        if epoch % args.save_at_epoch == 0:
+            model.save_weights(filepath=save_model_dir + "epoch-{}".format(epoch), save_format='tf')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run Azure Cognitive vision services for POI verification')
-    parser.add_argument('-p', '--path', default=None, required=True, help='Data path')
-    parser.add_argument('-v','--verbose',default=1,required=False)
+    parser.add_argument('-p', '--path', default=None, required=True, help='Data Path')
+    parser.add_argument('-s', '--save_at_epoch', default=10, required=False, help='save at n epoch')
+    parser.add_argument('-v', '--verbose', default=1, required=False, help='View at each step')
+
     args = parser.parse_args()
     main(args)
