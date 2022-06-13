@@ -23,7 +23,8 @@ Created a TF-Record file for image classification to classify dog and cat datase
 ```
 3. Run the script **python train.py -p <data_path>** to create tf-records for train and validation data and run training.
 4. Any of the models available in Tensorflow can be used , check the image size before selecting the Model
-## Different input image sizes for different neural networks
+
+### Different input image sizes for different neural networks
 <table>
      <tr align="center">
           <th>Type</th>
@@ -141,3 +142,7 @@ Created a TF-Record file for image classification to classify dog and cat datase
           <td>(224 * 224)</td>
      </tr>
 </table>
+
+## Object Detection
+Created a TF-Record file for object detection to classify dog and cat dataset from kaggle. Similar structure can be used for complex operations as well. 
+
