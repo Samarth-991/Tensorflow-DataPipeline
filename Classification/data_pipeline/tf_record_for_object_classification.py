@@ -8,7 +8,7 @@ DATA_PATH = "../train"
 
 
 class TFRecordForObjectClassifiaction:
-    def __init__(self, fname, op='read'):
+    def __init__(self, fname):
         self.tfrecord_name = fname
 
     def dataset_to_tf_record(self, image_files, label_files):
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     img_files = list(map(lambda x: os.path.join(data_path, x), img_data[:, 0]))
     img_labels = list(map(lambda x: 0 if x == 'cat' else 1, img_data[:, 1]))
     tf_record = TFRecordForObjectClassifiaction('train_image_classification.tfrecords')
-    # tf_dataset.dataset_to_tf_record(img_files,img_labels)
+    tf_record.dataset_to_tf_record(img_files,img_labels)
 
     parse_tf_record = ParseTFRecord(augmentataion=False)
     train_dataset = parse_tf_record.parse_dataset('train_image_classification.tfrecords')

@@ -135,7 +135,7 @@ def main(args):
         valid_loss.reset_states()
         valid_accuracy.reset_states()
         if epoch % args.save_at_epoch == 0:
-            model.save_weights(filepath=save_model_dir + "epoch-{}".format(epoch), save_format='tf')
+            classifier_model.save_weights(filepath=save_model_dir + "epoch-{}".format(epoch), save_format='tf')
 
 
 if __name__ == '__main__':
